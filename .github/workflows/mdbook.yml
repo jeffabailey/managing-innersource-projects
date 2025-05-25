@@ -73,6 +73,19 @@ jobs:
         id: pages
         uses: actions/configure-pages@v5
       
+      - name: Cache Mermaid diagrams
+        uses: actions/cache@v4
+        id: mermaid-cache
+        with:
+          path: .cache/mermaid
+          key: ${{ runner.os }}-mermaid-${{ hashFiles('**/*.md') }}
+          restore-keys: |
+            ${{ runner.os }}-mermaid-
+      
+      - name: Create cache directory
+        if: steps.mermaid-cache.outputs.cache-hit != 'true'
+        run: mkdir -p .cache/mermaid
+      
       - name: Cache built website
         uses: actions/cache@v4
         id: website-cache
