@@ -52,6 +52,7 @@ jobs:
       
       - name: Cache mdBook and plugins
         uses: actions/cache@v4
+        id: mdbook-cache
         with:
           path: |
             ~/.cargo/bin/mdbook
@@ -62,10 +63,11 @@ jobs:
             ${{ runner.os }}-mdbook-
       
       - name: Install mdBook and plugins
+        if: steps.mdbook-cache.outputs.cache-hit != 'true'
         run: |
-          cargo install --version ${MDBOOK_VERSION} mdbook
-          cargo install mdbook-mermaid
-          cargo install mdbook-embedify
+          cargo install --version ${MDBOOK_VERSION} mdbook --force
+          cargo install mdbook-mermaid --force
+          cargo install mdbook-embedify --force
       
       - name: Setup Pages
         id: pages
