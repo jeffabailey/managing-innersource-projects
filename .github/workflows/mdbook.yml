@@ -32,18 +32,58 @@ jobs:
       MDBOOK_VERSION: 0.4.36
     steps:
       - uses: actions/checkout@v4
-      - name: Install mdBook
+      
+      - name: Install Rust toolchain
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          components: rustfmt, clippy
+      
+      - name: Cache Rust toolchain
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cargo/bin/
+            ~/.cargo/registry/index/
+            ~/.cargo/registry/cache/
+            ~/.cargo/git/db/
+          key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-cargo-
+      
+      - name: Cache mdBook and plugins
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cargo/bin/mdbook
+            ~/.cargo/bin/mdbook-mermaid
+            ~/.cargo/bin/mdbook-embedify
+          key: ${{ runner.os }}-mdbook-${{ env.MDBOOK_VERSION }}
+          restore-keys: |
+            ${{ runner.os }}-mdbook-
+      
+      - name: Install mdBook and plugins
         run: |
-          curl --proto '=https' --tlsv1.2 https://sh.rustup.rs -sSf -y | sh
-          rustup update
           cargo install --version ${MDBOOK_VERSION} mdbook
           cargo install mdbook-mermaid
           cargo install mdbook-embedify
+      
       - name: Setup Pages
         id: pages
         uses: actions/configure-pages@v5
+      
+      - name: Cache built website
+        uses: actions/cache@v4
+        id: website-cache
+        with:
+          path: ./book
+          key: ${{ runner.os }}-website-${{ hashFiles('**/*.md', '**/*.toml', '**/*.css', '**/*.js', '**/*.html') }}
+          restore-keys: |
+            ${{ runner.os }}-website-
+      
       - name: Build with mdBook
+        if: steps.website-cache.outputs.cache-hit != 'true'
         run: mdbook build
+      
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
