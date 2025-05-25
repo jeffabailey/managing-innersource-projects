@@ -23,3 +23,8 @@ giscus.theme = "preferred_color_scheme"
 giscus.lang = "en"
 giscus.loading = "eager"
 giscus.crossorigin = "anonymous"
+
+[output]
+
+[output.html]
+additional-js = ["mermaid.min.js", "mermaid-init.js"]
