@@ -10,6 +10,7 @@ title = "How To Create An InnerSource Program Office"
 [preprocessor.mermaid]
 command = "mdbook-mermaid"
 cache-dir = ".cache/mermaid"
+render-mode = "preprocess"
 
 [preprocessor.embedify]
 giscus.enable = true
@@ -26,4 +27,3 @@ giscus.crossorigin = "anonymous"
 [output]
 
 [output.html]
-additional-js = ["mermaid.min.js", "mermaid-init.js"]
